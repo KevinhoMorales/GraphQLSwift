@@ -1,0 +1,8 @@
+schema: https://meniuz-backend-developmeniuz.up.railway.app/graphql  # ← usa tu endpoint real
+documents: GraphQLSwift/GraphQL/Queries/**/*.graphql
+generates:
+  GraphQLSwift/GraphQL/Generated/API.swift:
+    plugins:
+      - swift
+    config:
+      apolloPackage: Apollo

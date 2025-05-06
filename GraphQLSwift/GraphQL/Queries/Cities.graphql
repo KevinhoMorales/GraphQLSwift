@@ -1,0 +1,11 @@
+query Cities {
+  getCities(input: { page: 1 }) {
+    cities {
+      idCity
+      name
+      photoUrl
+      isActive
+      imgHeader
+    }
+  }
+}

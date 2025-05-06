@@ -1,0 +1,873 @@
+"""
+A directive used by the Apollo iOS client to annotate operations or fragments that should be used exclusively for generating local cache mutations instead of as standard operations.
+"""
+directive @apollo_client_ios_localCacheMutation on QUERY | MUTATION | SUBSCRIPTION | FRAGMENT_DEFINITION
+
+"""
+A directive used by the Apollo iOS code generation engine to generate custom import statements in operation or fragment definition files. An import statement to import a module with the name provided in the `module` argument will be added to the generated definition file.
+"""
+directive @import(
+  """The name of the module to import."""
+  module: String!
+) repeatable on QUERY | MUTATION | SUBSCRIPTION | FRAGMENT_DEFINITION
+
+"""Attach extra information to a given type."""
+directive @typePolicy(
+  """
+  A selection set containing fields used to compute the cache key of an object. Referenced fields must have non-nullable scalar types. Order is important.
+  """
+  keyFields: String!
+) on OBJECT | INTERFACE
+
+"""
+Directs the executor to defer this fragment when the `if` argument is true or undefined.
+"""
+directive @defer(
+  """Deferred when true or undefined."""
+  if: Boolean
+
+  """Unique name"""
+  label: String
+) on FRAGMENT_SPREAD | INLINE_FRAGMENT
+
+type Query {
+  getRoles(input: QueryRolesInput): GetRolesResponse!
+  getMe: MeUser
+  getUser(input: queryUserInput): ResponseGetUser!
+  getUsers(input: queryUsersInput): ResponseGetUsers!
+  getCountries(input: QueryCountriesInput): GetCountriesResponse!
+  getCountryBySlug(slug: String): GetCountryResponse
+  getProvinces(input: QueryProvincesInput): GetProvincesResponse!
+  getCities(input: QueryCitiesInput): GetCitiesResponse!
+  getCityBySlug(slug: String!): GetCityResponse
+  getBusiness(input: QueryBusinessInput): GetBusinessResponse!
+  getBusinessBySlug(slug: String!): GetBusinessBySlugResponse
+  getBusinessGoogleMapsByIdMap(idMap: String!): GetBusinessByGoogleMapsResponse
+  getReviewsByBusiness(input: QueryReviewsByBusinessInput): GetReviewsByBusinessResponse!
+  getMeReviews(input: MeReviewsInput): ResponseMeReviews!
+  getReviewById(idReview: String!): GetReviewResponse!
+  getReviews(input: QueryReviewsInput): GetReviewsListResponse!
+  getMeReviewByBusiness(slug: String!): ResponseGetReview
+  getMeFavorites(input: QueryMeFavorites): ResponseMeFavorites!
+  getBanners(input: QueryBannersInput): ResponseBanners!
+  getBannerByCity(slugCity: String): ResponseBanners!
+}
+
+type Mutation {
+  updateRol(input: updateRolInput): SuccessResponse!
+  updateMeUser(input: updateMeUserInput): MeUser!
+  removeMeUser: SuccessResponse!
+  registerUser(input: registerUserInput): AuthResponse!
+  loginUser(input: loginUserInput): AuthResponse!
+  verifiedAdmin(input: verifiedAdminInput): AuthResponse!
+  refreshTokenUser(input: refreshTokenInput): AuthResponse!
+  logoutUser: SuccessResponse!
+  updateUser(input: updateUserInput): SuccessResponse!
+  removeUser(idUser: String!): SuccessResponse!
+  newCity(input: newCityInput): GetCityResponse!
+  updateCity(idCity: ID!, input: updateCityInput): GetCityResponse!
+  deleteCity(idCity: ID!): SuccessResponse!
+  addAndDelMeFavorites(idBusiness: ID!): SuccessResponse!
+  newBusiness(input: newBusinessInput): ResponseBusiness!
+  publishBusiness(isBusiness: String): SuccessResponse!
+  updateBusiness(input: updateBusinessInput): ResponseBusiness!
+  pauseBusiness(idBusiness: String!, paused_until: String!): SuccessResponse!
+  removeBusiness(idBusiness: String!): SuccessResponse!
+  addReview(input: addReviewInput): SuccessResponse!
+  updateMeReviewByBusiness(input: addReviewInput): SuccessResponse!
+  updateReview(input: updateReviewInput): SuccessResponse!
+  removeReview(idReview: String!): SuccessResponse!
+  newBanner(input: newBannerInput): ResponseBanner!
+  updateBanner(input: updateBannerInput): ResponseBanner!
+  removeBanner(idBanner: String!): SuccessResponse!
+}
+
+type SuccessResponse {
+  success: Boolean!
+}
+
+type AuthResponse {
+  twoFaUrlQr: String
+  verificationIsRequired: Boolean
+  user: User
+  token: String
+  refreshToken: String
+}
+
+input loginUserInput {
+  email: String!
+  password: String!
+  idGoogleToken: String!
+}
+
+input verifiedAdminInput {
+  userTokenCode: String!
+  email: String!
+  password: String!
+  idGoogleToken: String!
+}
+
+input registerUserInput {
+  email: String!
+  password: String!
+  idGoogleToken: String!
+  name: String
+  avatar: String
+  platform: String
+}
+
+input refreshTokenInput {
+  refreshToken: String!
+}
+
+type Banner {
+  idBanner: ID!
+  imagenUrl: String!
+  code: String
+  name: String
+  openLink: String
+  isActive: Boolean!
+  idCity: String!
+  idBusiness: String
+  type: String!
+  status: String!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type ResponseBanners {
+  banners: [Banner]!
+  pages: Int
+  page: Int
+  count: Int
+}
+
+type ResponseBanner {
+  banner: Banner!
+}
+
+input QueryBannersInput {
+  page: Int
+  slugCity: String
+  idBusiness: String
+  isActive: Boolean
+  status: String
+}
+
+input newBannerInput {
+  code: String
+  name: String
+  openLink: String
+  isActive: Boolean!
+  idCity: String!
+  type: String!
+  imgBase64: String!
+}
+
+input updateBannerInput {
+  idBanner: String!
+  code: String
+  name: String
+  openLink: String
+  isActive: Boolean!
+  idCity: String!
+  type: String!
+  imgBase64: String!
+}
+
+type Business {
+  idBusiness: ID!
+  address: String!
+  booking: Boolean!
+  delivery: Boolean!
+  email: String
+  latitude: String!
+  longitude: String!
+  name: String!
+  phone: String
+  isRockStar: Boolean!
+  isHueca: Boolean!
+  isNew: Boolean!
+  isPet: Boolean!
+  social: String!
+  socialUsername: String!
+  sponsor: Boolean!
+  tags: [String]
+  verified: Boolean!
+  isActive: Boolean!
+  imageUrl: String
+  menuUrl: String
+  idCity: ID!
+  typeOfBusiness: String!
+  slug: String!
+  averageReviews: String!
+  totalReviews: Int!
+  totalGrades: Int!
+  paused_until: String
+  remove_the: String
+  isOpen: Boolean!
+  openDefault: Boolean!
+  idUser: ID
+  idPlan: ID
+  idMap: ID
+  status: String!
+  alertStatus: String
+  notifications: Int!
+  coupons: Int!
+  banners: Int!
+  createdAt: String!
+  updatedAt: String!
+  isFav: Boolean
+}
+
+type PublicBusiness {
+  idBusiness: ID!
+  slug: String!
+  name: String!
+  imageUrl: String
+  menuUrl: String
+  typeOfBusiness: String!
+  city: PublicCity
+}
+
+input newBusinessInput {
+  address: String!
+  booking: Boolean
+  delivery: Boolean
+  email: String
+  latitude: String!
+  longitude: String!
+  name: String!
+  phone: String
+  isRockStar: Boolean
+  isHueca: Boolean
+  isPet: Boolean
+  social: String!
+  socialUsername: String!
+  sponsor: Boolean
+  tags: [String]
+  verified: Boolean
+  isActive: Boolean
+  imageUrl: String
+  menuUrl: String
+  idCity: ID!
+  typeOfBusiness: String!
+  idMap: ID
+}
+
+input updateBusinessInput {
+  address: String
+  booking: Boolean
+  delivery: Boolean
+  email: String
+  latitude: String
+  longitude: String
+  name: String
+  phone: String
+  isRockStar: Boolean
+  isHueca: Boolean
+  isPet: Boolean
+  social: String
+  socialUsername: String
+  sponsor: Boolean
+  tags: [String]
+  verified: Boolean
+  isActive: Boolean
+  imageUrl: String
+  menuUrl: String
+  idCity: ID
+  typeOfBusiness: String
+  idMap: ID
+}
+
+input QueryBusinessInput {
+  find: String
+  page: Int
+  idCity: String
+  slugCity: String
+  isRockStar: Boolean
+  sponsor: Boolean
+  orderBy: String
+  status: String
+  orderField: String
+  notFeatured: Boolean
+  starsponsor: Boolean
+  lastName: String
+  limit: Int
+  typeOfBusiness: String
+  isOpen: Boolean
+}
+
+type GetBusinessResponse {
+  business: [Business!]!
+  page: Int!
+  pages: Int!
+  count: Int!
+  totalBusiness: Int!
+}
+
+type GetBusinessBySlugResponse {
+  business: Business
+}
+
+type ResponseBusiness {
+  business: Business
+}
+
+type BusinessGoogleMaps {
+  query: String
+  name: String
+  name_for_emails: String
+  place_id: String
+  google_id: String
+  kgmid: String
+  full_address: String
+  borough: String
+  street: String
+  postal_code: String
+  area_service: Boolean
+  country_code: String
+  country: String
+  city: String
+  us_state: String
+  state: String
+  plus_code: String
+  latitude: Int
+  longitude: Int
+  h3: String
+  time_zone: String
+  popular_times: [PopularTime]
+  site: String
+  phone: String
+  type: String
+  logo: String
+  description: String
+  typical_time_spent: String
+  located_in: String
+  located_google_id: String
+  category: String
+  subtypes: String
+  posts: String
+  reviews_tags: [String]
+  rating: Int
+  reviews: Int
+  reviews_data: [ReviewsDaum]
+  photos_count: Int
+  cid: String
+  reviews_link: String
+  reviews_id: String
+  photo: String
+  street_view: String
+  working_hours_old_format: String
+  working_hours: WorkingHours
+  other_hours: String
+  business_status: String
+  range: String
+  reviews_per_score: ReviewsPerScore
+  reservation_links: String
+  booking_appointment_link: String
+  menu_link: String
+  order_links: String
+  owner_id: String
+  verified: Boolean
+  owner_title: String
+  owner_link: String
+  location_link: String
+  location_reviews_link: String
+}
+
+type PopularTime {
+  day: String
+  day_text: String
+  popular_times: [ItemPopularTimes]
+  percentage: Int
+  title: String
+  time: Int
+}
+
+type ItemPopularTimes {
+  hour: Int
+  percentage: Int
+  title: String
+  time: String
+}
+
+type ReviewsDaum {
+  review_id: String
+  review_pagination_id: String
+  author_link: String
+  author_title: String
+  author_id: String
+  author_image: String
+  author_reviews_count: Int
+  author_ratings_count: Int
+  review_text: String
+  review_img_url: String
+  review_img_urls: String
+  review_questions: ValueReviewQuestions
+  review_photo_ids: String
+  owner_answer: String
+  owner_answer_timestamp: String
+  owner_answer_timestamp_datetime_utc: String
+  review_link: String
+  review_rating: Int
+  review_timestamp: Int
+  review_datetime_utc: String
+  review_likes: Int
+}
+
+type ValueReviewQuestions {
+  Servicio: String
+  Tipo_de_comida: String
+  Precio_por_persona: String
+  Comida: String
+  Ambiente: String
+}
+
+type WorkingHours {
+  lunes: String
+  martes: String
+  miercoles: String
+  jueves: String
+  viernes: String
+  sabado: String
+  domingo: String
+}
+
+type ReviewsPerScore {
+  oneStar: Int
+  twoStars: Int
+  threeStars: Int
+  fourStars: Int
+  fiveStars: Int
+}
+
+type GetBusinessByGoogleMapsResponse {
+  businessGoogleMaps: BusinessGoogleMaps
+}
+
+type City {
+  idCity: ID!
+  name: String!
+  photoUrl: String!
+  isActive: Boolean!
+  idProvince: ID!
+  slug: String!
+  imgHeader: String!
+  createdAt: String!
+  updatedAt: String!
+  latitude: String!
+  longitude: String!
+  businessCount: Int
+  province: Province
+}
+
+type PublicCity {
+  name: String!
+  slug: String
+  photoUrl: String
+}
+
+type GetCitiesResponse {
+  cities: [City!]!
+  page: Int!
+  pages: Int!
+  count: Int!
+}
+
+type GetCityResponse {
+  city: City
+}
+
+input updateCityInput {
+  photoUrl: String
+  name: String
+  isActive: Boolean
+  imgHeader: String
+  idProvince: String
+  latitude: String
+  longitude: String
+}
+
+input newCityInput {
+  photoUrl: String!
+  name: String!
+  isActive: Boolean!
+  idProvince: String!
+  imgHeader: String
+  latitude: String!
+  longitude: String!
+}
+
+input QueryCitiesInput {
+  find: String
+  page: Int
+  slugProvince: String
+  showProvince: Boolean
+  isCountBusiness: Boolean
+}
+
+type Country {
+  idCountry: ID!
+  name: String!
+  isActive: Boolean!
+  countryCode: String!
+  emoji: String!
+  slug: String!
+  isoCode: String!
+  continent: String!
+  imageUrl: String!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type GetCountriesResponse {
+  countries: [Country!]!
+  page: Int!
+  pages: Int!
+  count: Int!
+}
+
+type GetCountryResponse {
+  country: Country
+}
+
+input QueryCountriesInput {
+  find: String
+  page: Int
+}
+
+interface Favorite {
+  idFavorite: ID!
+  idUser: ID!
+  idBusiness: ID!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type FavoriteList implements Favorite {
+  idFavorite: ID!
+  idUser: ID!
+  idBusiness: ID!
+  createdAt: String!
+  updatedAt: String!
+  business: PublicBusiness!
+  user: PublicUser!
+}
+
+type MeFavoriteList implements Favorite {
+  idFavorite: ID!
+  idUser: ID!
+  idBusiness: ID!
+  createdAt: String!
+  updatedAt: String!
+  business: PublicBusiness!
+}
+
+type ResponseMeFavorites {
+  favorites: [MeFavoriteList]!
+  count: Int
+  page: Int
+  pages: Int
+}
+
+input QueryMeFavorites {
+  page: Int!
+  limit: Int
+}
+
+type Province {
+  idProvince: ID!
+  idCountry: ID!
+  slug: String!
+  province: String!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type GetProvincesResponse {
+  provinces: [Province!]!
+  page: Int!
+  pages: Int!
+  count: Int!
+}
+
+input QueryProvincesInput {
+  find: String
+  page: Int
+  slugCountry: String
+}
+
+interface Review {
+  idReview: ID!
+  rate: String!
+  foodRate: Int
+  serviceRate: Int
+  ambienceRate: Int
+  description: String!
+  status: String!
+  idUser: ID!
+  idBusiness: ID!
+  rejectedReason: String
+  createdAt: String!
+  updatedAt: String!
+}
+
+type GetReview implements Review {
+  idReview: ID!
+  rate: String!
+  foodRate: Int
+  serviceRate: Int
+  ambienceRate: Int
+  description: String!
+  status: String!
+  idUser: ID!
+  idBusiness: ID!
+  rejectedReason: String
+  createdAt: String!
+  updatedAt: String!
+  updatedAtFormatDistance: String
+  photos: [String]
+}
+
+type ResponseGetReview {
+  review: GetReview
+}
+
+type ServiceReviewBusiness {
+  service: Int
+  food: Int
+  environment: Int
+}
+
+type SummaryReviewBusiness {
+  oneStar: Int
+  twoStars: Int
+  threeStars: Int
+  fourStars: Int
+  fiveStars: Int
+}
+
+type ReviewsBusiness implements Review {
+  idReview: ID!
+  rate: String!
+  foodRate: Int
+  serviceRate: Int
+  ambienceRate: Int
+  description: String!
+  status: String!
+  idUser: ID!
+  idBusiness: ID!
+  rejectedReason: String
+  createdAt: String!
+  createdAtFormatDistance: String!
+  updatedAt: String!
+  photos: [String]
+  city: City!
+  business: PublicBusiness!
+  user: PublicUser!
+  services: ServiceReviewBusiness
+  review_link_google_maps: String
+}
+
+type MeReviews implements Review {
+  idReview: ID!
+  rate: String!
+  foodRate: Int
+  serviceRate: Int
+  ambienceRate: Int
+  description: String!
+  status: String!
+  idUser: ID!
+  idBusiness: ID!
+  rejectedReason: String
+  createdAt: String!
+  createdAtFormatDistance: String!
+  updatedAt: String!
+  photos: [String]
+  city: PublicCity!
+  business: PublicBusiness!
+  user: PublicUser!
+}
+
+type ResponseMeReviews {
+  reviews: [MeReviews]!
+  count: Int
+  page: Int
+  pages: Int
+}
+
+type GetReviewById implements Review {
+  idReview: ID!
+  rate: String!
+  foodRate: Int
+  serviceRate: Int
+  ambienceRate: Int
+  description: String!
+  status: String!
+  idUser: ID!
+  idBusiness: ID!
+  rejectedReason: String
+  createdAt: String!
+  updatedAt: String!
+  business: PublicBusiness!
+  user: PublicUser!
+}
+
+type GetReviewResponse {
+  review: GetReviewById
+}
+
+type GetReviewsListResponse {
+  reviews: [GetReviewById!]!
+  page: Int!
+  pages: Int!
+  count: Int!
+}
+
+type GetReviewsByBusinessResponse {
+  reviews: [ReviewsBusiness!]!
+  summary: SummaryReviewBusiness
+  page: Int!
+  pages: Int!
+  count: Int!
+}
+
+input addReviewInput {
+  foodRate: Int!
+  serviceRate: Int!
+  ambienceRate: Int!
+  description: String!
+  idBusiness: ID!
+  photos: [String]
+}
+
+input updateReviewInput {
+  foodRate: Int!
+  serviceRate: Int!
+  ambienceRate: Int!
+  description: String
+  idReview: String!
+  rejectedReason: String
+  status: String
+}
+
+input MeReviewsInput {
+  find: String
+  page: Int
+  limit: Int
+}
+
+input QueryReviewsByBusinessInput {
+  slugBusiness: String!
+  page: Int
+  reviewGoogle: Boolean
+  reviewSummary: Boolean
+}
+
+input QueryReviewsInput {
+  find: String
+  page: Int
+  limit: Int
+  idBusiness: String
+  idUser: String
+  status: String
+}
+
+type Rol {
+  idRol: ID!
+  rol: String!
+  description: String!
+  isActive: Boolean!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type GetRolesResponse {
+  roles: [Rol!]!
+  pages: Int!
+  page: Int!
+  count: Int!
+}
+
+input QueryRolesInput {
+  find: String
+  page: Int
+}
+
+input updateRolInput {
+  idRol: String!
+  isActive: Boolean
+  description: String
+}
+
+type User {
+  idUser: ID!
+  name: String!
+  email: String!
+  avatar: String
+  password: String!
+  isActive: Boolean!
+  idRol: ID!
+  provider: String!
+  category: String
+  lastSession: String
+  platform: String
+  cityVisited: String
+  createdAt: String!
+  updatedAt: String!
+  role: Rol
+}
+
+type PublicUser {
+  idUser: ID!
+  name: String!
+  email: String!
+  avatar: String
+}
+
+type UpdateMeUserResponse {
+  avatarBase64: String
+  name: String
+}
+
+type MeUser {
+  user: User
+}
+
+type ResponseGetUser {
+  user: User
+  favorites: Int
+  reviews: Int
+  coupons: Int
+}
+
+type ResponseGetUsers {
+  users: [User]
+  count: Int
+  page: Int
+  pages: Int
+}
+
+input queryUserInput {
+  idUser: String!
+  isCounts: Boolean
+}
+
+input queryUsersInput {
+  find: String
+  page: Int
+}
+
+input updateMeUserInput {
+  name: String
+  avatarBase64: String
+}
+
+input updateUserInput {
+  idUser: String!
+  name: String
+  email: String
+  isActive: Boolean
+  idRol: String
+}
